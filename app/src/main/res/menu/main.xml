@@ -4,10 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/main_newMessage"
         android:title="New Messsage"
-        app:showAsAction="ifRoom"
         tools:ignore="HardcodedText" />
     <item android:id="@+id/main_signOut"
-        android:title="SIGN OUT"
-        app:showAsAction="ifRoom"
+        android:title="Sign out"
         tools:ignore="HardcodedText" />
 </menu>
