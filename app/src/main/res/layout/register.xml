@@ -78,6 +78,7 @@
         android:layout_marginEnd="32dp"
         android:background="@drawable/round_style"
         android:text="Sign up"
+        android:onClick="handleRegister"
         app:layout_constraintEnd_toEndOf="@+id/register_password"
         app:layout_constraintStart_toStartOf="@+id/register_password"
         app:layout_constraintTop_toBottomOf="@+id/register_password" />
@@ -90,6 +91,7 @@
         android:layout_marginTop="15dp"
         android:layout_marginEnd="32dp"
         android:text="Already have an account?"
+        android:onClick="moveLogin"
         android:gravity="center"
         android:textColor="@color/white"
         android:textStyle="bold|italic"

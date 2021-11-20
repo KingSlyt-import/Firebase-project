@@ -1,20 +1,21 @@
 {
   "project_info": {
-    "project_number": "707078677533",
-    "project_id": "friendlychat-f2f91",
-    "storage_bucket": "friendlychat-f2f91.appspot.com"
+    "project_number": "899501431219",
+    "firebase_url": "https://friendlychat-b8781-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "friendlychat-b8781",
+    "storage_bucket": "friendlychat-b8781.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:707078677533:android:a526ab7185ae4f480cd2f4",
+        "mobilesdk_app_id": "1:899501431219:android:324a65a1cf4ffcaabd53c6",
         "android_client_info": {
           "package_name": "com.google.firebase.udacity.friendlychat"
         }
       },
       "oauth_client": [
         {
-          "client_id": "707078677533-3ivc4kedvb5jk06ic6d8hsphl06e55i1.apps.googleusercontent.com",
+          "client_id": "899501431219-tvg6405dvaipurqn00geo7ggvcfovk6s.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.google.firebase.udacity.friendlychat",
@@ -22,20 +23,20 @@
           }
         },
         {
-          "client_id": "707078677533-aokt6s1n2kmvevu9gpctkh9lipf6tnuu.apps.googleusercontent.com",
+          "client_id": "899501431219-ur2fh9fo2955d4hlhabkfc3i4999bium.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB_X_DDzMVlgAAjgX4y7sHxuPy12aM4GMY"
+          "current_key": "AIzaSyAo4z5NF7w-6tUZ4WbKiz5sh9Vra10DXXU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "707078677533-aokt6s1n2kmvevu9gpctkh9lipf6tnuu.apps.googleusercontent.com",
+              "client_id": "899501431219-ur2fh9fo2955d4hlhabkfc3i4999bium.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
