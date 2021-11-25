@@ -68,7 +68,7 @@
         android:layout_marginTop="15dp"
         android:layout_marginEnd="32dp"
         android:gravity="center"
-        android:text="New to our demo? Register now"
+        android:text="Login/Register"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:textStyle="bold|italic"

@@ -1,6 +1,7 @@
 package com.example.firebase_project;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -30,6 +31,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +42,9 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
     private static final String TAG = "MainActivity";
 
-//    public static final String ANONYMOUS = "anonymous";
+    //    public static final String ANONYMOUS = "anonymous";
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
+    private static final int RC_PHOTO_PICKER = 2;
 
     private ListView mMessageListView;
     private MessageAdapter mMessageAdapter;
@@ -54,7 +59,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     private DatabaseReference mMessagesDatabaseReference;
     private ChildEventListener mChildEventListener;
     private FirebaseAuth mFirebaseAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseStorage mFirebaseStorage;
+    private StorageReference mChatPhotoStorageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +68,16 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         setContentView(R.layout.activity_main);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        mUsername = user.getEmail();
+        if (user != null) {
+            mUsername = user.getEmail();
+        }
 
         mFirebaseDatabase = FirebaseDatabase.getInstance("https://friendlychat-b8781-default-rtdb.asia-southeast1.firebasedatabase.app/");
         mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseStorage = FirebaseStorage.getInstance();
+
         mMessagesDatabaseReference = mFirebaseDatabase.getReference().child("messages");
+        mChatPhotoStorageReference = mFirebaseStorage.getReference().child("chat_photos");
 
         // Initialize references to views
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -88,6 +99,10 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             @Override
             public void onClick(View view) {
                 // TODO: Fire an intent to show an image picker
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/jpeg");
+                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER);
             }
         });
 
@@ -118,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             public void onClick(View view) {
                 // TODO: Send messages on click
                 FriendlyMessage friendlyMessage = new FriendlyMessage(
-                        mMessageEditText.getText().toString(), mUsername, null);
+                        mMessageEditText.getText().toString().trim(), mUsername, null);
                 mMessagesDatabaseReference.push().setValue(friendlyMessage);
                 // Clear input box
                 mMessageEditText.setText("");
@@ -133,18 +148,49 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             }
 
             @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) { }
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+            }
 
             @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) { }
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+            }
 
             @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) { }
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+            }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
         };
         mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
+
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK){
+            Uri selectedImageUri = data.getData();
+            StorageReference photoRef =
+                    mChatPhotoStorageReference.child(selectedImageUri.getLastPathSegment());
+            photoRef.putFile(selectedImageUri)
+            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                     photoRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                         @Override
+                         public void onSuccess(Uri uri) {
+                             FriendlyMessage friendlyMessage = new FriendlyMessage(
+                                     null, mUsername, uri.toString()
+                             );
+                             mMessagesDatabaseReference.push().setValue(friendlyMessage);
+                         }
+                     });
+                }
+            });
+        }
     }
 
     private void startLoginActivity(){
@@ -177,7 +223,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             startLoginActivity();
             return;
         }
-
         firebaseAuth.getCurrentUser().getIdToken(true)
         .addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
             @Override
