@@ -46,4 +46,8 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
 
         return convertView;
     }
+
+    public void remove(int index) {
+    }
 }
+

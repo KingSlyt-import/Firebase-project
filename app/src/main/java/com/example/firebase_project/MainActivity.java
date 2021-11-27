@@ -1,5 +1,7 @@
 package com.example.firebase_project;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,14 +13,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.firebase.ui.auth.AuthUI;
@@ -55,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
     private String mUsername;
 
+
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mMessagesDatabaseReference;
     private ChildEventListener mChildEventListener;
@@ -88,6 +94,32 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         List<FriendlyMessage> friendlyMessages = new ArrayList<>();
         mMessageAdapter = new MessageAdapter(this, R.layout.item_message, friendlyMessages);
         mMessageListView.setAdapter(mMessageAdapter);
+
+        mMessageListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Context context = MainActivity.this;
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Delete");
+                builder.setMessage("Are you sure to delete this message?");
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        FriendlyMessage item = friendlyMessages.get(position);
+                        friendlyMessages.remove(position);
+                        mMessageAdapter.notifyDataSetChanged();
+                        Toast.makeText(MainActivity.this, "You deleted: ", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                return false;
+            }
+        });
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -139,10 +171,13 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         });
 
         mChildEventListener = new ChildEventListener() {
+            List<String> keyList = new ArrayList<String>();
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 FriendlyMessage friendlyMessage = snapshot.getValue(FriendlyMessage.class);
                 mMessageAdapter.add(friendlyMessage);
+                keyList.add(snapshot.getKey());
+                mMessageAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -151,6 +186,10 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                int index = keyList.indexOf(snapshot.getKey());
+                mMessageAdapter.remove(index);
+                keyList.remove(index);
+                mMessageAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -189,6 +228,11 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 }
             });
         }
+    }
+
+    @Override
+    public boolean deleteDatabase(String name) {
+        return super.deleteDatabase(name);
     }
 
     private void startLoginActivity(){
