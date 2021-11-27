@@ -1,6 +1,5 @@
 package com.example.firebase_project;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -92,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         mSendButton = (Button) findViewById(R.id.sendButton);
 
         // Initialize message ListView and its adapter
-        mMessageAdapter = new MessageAdapter(this, R.layout.item_message, friendlyMessages);
+        mMessageAdapter = new MessageAdapter(this, R.layout.item_from_message, friendlyMessages);
         mMessageListView.setAdapter(mMessageAdapter);
 
         mMessageListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

@@ -2,7 +2,6 @@ package com.example.firebase_project;
 
 import android.app.Activity;
 import android.content.Context;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -21,7 +20,7 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_message, parent, false);
+            convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_from_message, parent, false);
         }
 
         ImageView photoImageView = (ImageView) convertView.findViewById(R.id.photoImageView);

@@ -10,6 +10,7 @@
         android:id="@+id/nameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingTop="5dp"
         android:layout_weight="0"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textStyle="bold"
@@ -37,9 +38,8 @@
         android:paddingEnd="8dp"
         android:paddingTop="3dp"
         android:paddingBottom="3dp"
+        android:layout_marginEnd="16dp"
+        android:maxWidth="240dp"
         tools:text="Message"
         tools:ignore="RtlSymmetry" />
-
-
-
 </LinearLayout>
