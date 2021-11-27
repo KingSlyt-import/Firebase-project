@@ -12,11 +12,12 @@
         android:layout_height="wrap_content"
         android:layout_weight="0"
         android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textStyle="bold"
         tools:text="Name" />
 
     <ImageView
         android:id="@+id/photoImageView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:paddingEnd="10dp"
@@ -26,11 +27,12 @@
     <TextView
         android:id="@+id/messageTextView"
         android:background="@drawable/round_style"
-        android:backgroundTint="#808080"
+        android:backgroundTint="#DFF0D8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0"
         android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/black"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:paddingTop="3dp"
