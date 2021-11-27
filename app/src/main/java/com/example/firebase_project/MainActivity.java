@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
     private String mUsername;
 
+    List<String> listKey = new ArrayList<String>();
     List<FriendlyMessage> friendlyMessages = new ArrayList<>();
 
     private FirebaseDatabase mFirebaseDatabase;
@@ -158,6 +159,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 FriendlyMessage friendlyMessage = snapshot.getValue(FriendlyMessage.class);
                 mMessageAdapter.add(friendlyMessage);
+                listKey.add(snapshot.getKey());
+                mMessageAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -195,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 friendlyMessages.remove(position);
                 mMessageAdapter.notifyDataSetChanged();
                 //detele on database
-                mMessagesDatabaseReference.removeValue(new DatabaseReference.CompletionListener() {
+                mMessagesDatabaseReference.child("").removeValue(new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                         Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
