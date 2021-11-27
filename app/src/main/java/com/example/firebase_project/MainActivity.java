@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
     private String mUsername;
 
+    List<FriendlyMessage> friendlyMessages = new ArrayList<>();
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mMessagesDatabaseReference;
@@ -91,33 +92,14 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         mSendButton = (Button) findViewById(R.id.sendButton);
 
         // Initialize message ListView and its adapter
-        List<FriendlyMessage> friendlyMessages = new ArrayList<>();
         mMessageAdapter = new MessageAdapter(this, R.layout.item_message, friendlyMessages);
         mMessageListView.setAdapter(mMessageAdapter);
 
         mMessageListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Context context = MainActivity.this;
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Delete");
-                builder.setMessage("Are you sure to delete this message?");
-                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        FriendlyMessage item = friendlyMessages.get(position);
-                        friendlyMessages.remove(position);
-                        mMessageAdapter.notifyDataSetChanged();
-                        Toast.makeText(MainActivity.this, "You deleted: ", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                return false;
+                isDelete(position);
+                return true;
             }
         });
 
@@ -176,8 +158,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 FriendlyMessage friendlyMessage = snapshot.getValue(FriendlyMessage.class);
                 mMessageAdapter.add(friendlyMessage);
-                keyList.add(snapshot.getKey());
-                mMessageAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -186,10 +166,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                int index = keyList.indexOf(snapshot.getKey());
-                mMessageAdapter.remove(index);
-                keyList.remove(index);
-                mMessageAdapter.notifyDataSetChanged();
+                FriendlyMessage friendlyMessage = snapshot.getValue(FriendlyMessage.class);
+                mMessageAdapter.remove(friendlyMessage);
             }
 
             @Override
@@ -205,6 +183,34 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
     }
 
+    public void isDelete(final int position) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Message");
+        alert.setMessage("Are you going to delete this message?");
+        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //delete on interface
+                FriendlyMessage item = friendlyMessages.get(position);
+                friendlyMessages.remove(position);
+                mMessageAdapter.notifyDataSetChanged();
+                //detele on database
+                mMessagesDatabaseReference.removeValue(new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                        Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        alert.show();
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
