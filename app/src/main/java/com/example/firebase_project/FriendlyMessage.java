@@ -19,14 +19,16 @@ public class FriendlyMessage {
 
     private String text;
     private String name;
+    private String inChatName;
     private String photoUrl;
 
     public FriendlyMessage() {
     }
 
-    public FriendlyMessage(String text, String name, String photoUrl) {
+    public FriendlyMessage(String text, String name, String inChatName, String photoUrl) {
         this.text = text;
         this.name = name;
+        this.inChatName = inChatName;
         this.photoUrl = photoUrl;
     }
 
@@ -52,5 +54,13 @@ public class FriendlyMessage {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public String getInChatName() {
+        return inChatName;
+    }
+
+    public void setInChatName(String inChatName) {
+        this.inChatName = inChatName;
     }
 }

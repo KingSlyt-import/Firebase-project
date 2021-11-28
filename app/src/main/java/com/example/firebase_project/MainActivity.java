@@ -56,10 +56,10 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     private ImageButton mPhotoPickerButton;
     private EditText mMessageEditText;
     private Button mSendButton;
-
     private String mUsername;
+    private String mInChatName;
 
-    List<String> listKey = new ArrayList<String>();
+    List<String> listKey = new ArrayList<>();
     List<FriendlyMessage> friendlyMessages = new ArrayList<>();
 
     private FirebaseDatabase mFirebaseDatabase;
@@ -69,18 +69,20 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mChatPhotoStorageReference;
 
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        mUsername = user.getEmail();
+        mUsername = user.getDisplayName();
 
         mFirebaseDatabase = FirebaseDatabase.getInstance("https://friendlychat-b8781-default-rtdb.asia-southeast1.firebasedatabase.app/");
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseStorage = FirebaseStorage.getInstance();
 
+        mFirebaseDatabase.getReference("app_title").setValue("Firebase Project");
         mMessagesDatabaseReference = mFirebaseDatabase.getReference().child("messages");
         mChatPhotoStorageReference = mFirebaseStorage.getReference().child("chat_photos");
 
@@ -145,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             public void onClick(View view) {
                 // TODO: Send messages on click
                 FriendlyMessage friendlyMessage = new FriendlyMessage(
-                        mMessageEditText.getText().toString().trim(), mUsername, null);
+                        mMessageEditText.getText().toString().trim(), mUsername, mInChatName, null);
                 mMessagesDatabaseReference.push().setValue(friendlyMessage);
                 // Clear input box
                 mMessageEditText.setText("");
@@ -153,13 +155,15 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         });
 
         mChildEventListener = new ChildEventListener() {
-            List<String> keyList = new ArrayList<String>();
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 FriendlyMessage friendlyMessage = snapshot.getValue(FriendlyMessage.class);
-                mMessageAdapter.add(friendlyMessage);
-                listKey.add(snapshot.getKey());
-                mMessageAdapter.notifyDataSetChanged();
+                if(friendlyMessage != null) {
+                    mMessageAdapter.add(friendlyMessage);
+                    String key = snapshot.getKey();
+                    listKey.add(key);
+                    mMessageAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -169,7 +173,15 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
                 FriendlyMessage friendlyMessage = snapshot.getValue(FriendlyMessage.class);
-                mMessageAdapter.remove(friendlyMessage);
+                if (friendlyMessage == null || friendlyMessages == null || friendlyMessages.isEmpty())
+                    return;
+                String key = snapshot.getKey();
+                int index = listKey.indexOf(key);
+                if (index != -1) {
+                    friendlyMessages.remove(index);
+                    listKey.remove(index);
+                }
+                mMessageAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -181,8 +193,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             }
         };
         mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
-
-
     }
 
     public void isDelete(final int position) {
@@ -194,15 +204,11 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             public void onClick(DialogInterface dialog, int which) {
                 //delete on interface
                 FriendlyMessage item = friendlyMessages.get(position);
-                friendlyMessages.remove(position);
+                friendlyMessages.remove(item);
                 mMessageAdapter.notifyDataSetChanged();
-                //detele on database
-                mMessagesDatabaseReference.child("").removeValue(new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                        Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                //delete on database
+                String key = listKey.get(position);
+                mMessagesDatabaseReference.child(key).removeValue();
             }
         });
         alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -228,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                          @Override
                          public void onSuccess(Uri uri) {
                              FriendlyMessage friendlyMessage = new FriendlyMessage(
-                                     null, mUsername, uri.toString()
+                                     null, mUsername, mInChatName, uri.toString()
                              );
                              mMessagesDatabaseReference.push().setValue(friendlyMessage);
                          }
@@ -236,11 +242,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 }
             });
         }
-    }
-
-    @Override
-    public boolean deleteDatabase(String name) {
-        return super.deleteDatabase(name);
     }
 
     private void startLoginActivity(){
