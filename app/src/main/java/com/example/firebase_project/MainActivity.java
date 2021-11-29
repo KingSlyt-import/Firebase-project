@@ -237,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                      photoRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                          @Override
                          public void onSuccess(Uri uri) {
+                             mUsername = user.getDisplayName();
                              FriendlyMessage friendlyMessage = new FriendlyMessage(
                                      null, mUsername, mInChatName, uri.toString()
                              );
