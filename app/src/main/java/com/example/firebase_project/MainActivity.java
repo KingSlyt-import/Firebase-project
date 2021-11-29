@@ -80,8 +80,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mUsername = user.getDisplayName();
-
         mFirebaseDatabase = FirebaseDatabase.getInstance("https://friendlychat-b8781-default-rtdb.asia-southeast1.firebasedatabase.app/");
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseStorage = FirebaseStorage.getInstance();
@@ -96,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         mPhotoPickerButton = (ImageButton) findViewById(R.id.photoPickerButton);
         mMessageEditText = (EditText) findViewById(R.id.messageEditText);
         mSendButton = (Button) findViewById(R.id.sendButton);
+        mUsername = "Anonymous";
 
         // Initialize message ListView and its adapter
         mMessageAdapter = new MessageAdapter(this, R.layout.item_from_message, friendlyMessages);
@@ -150,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             @Override
             public void onClick(View view) {
                 // TODO: Send messages on click
+                mUsername = user.getDisplayName();
                 FriendlyMessage friendlyMessage = new FriendlyMessage(
                         mMessageEditText.getText().toString().trim(), mUsername, mInChatName, null);
                 mMessagesDatabaseReference.push().setValue(friendlyMessage);
