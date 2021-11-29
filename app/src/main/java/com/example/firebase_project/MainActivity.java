@@ -2,6 +2,9 @@ package com.example.firebase_project;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.BlendMode;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -24,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -205,7 +209,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             public void onClick(DialogInterface dialog, int which) {
                 //delete on interface
                 FriendlyMessage item = friendlyMessages.get(position);
-                friendlyMessages.remove(item);
                 mMessageAdapter.notifyDataSetChanged();
                 //delete on database
                 String key = listKey.get(position);

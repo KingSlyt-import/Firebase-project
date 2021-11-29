@@ -46,8 +46,8 @@
             android:layout_marginBottom="3dp"
             android:layout_weight="7"
             android:autofillHints="Enter mesage"
-            android:inputType="textLongMessage"
-            tools:ignore="LabelFor,RtlSymmetry" />
+            android:inputType="textCapSentences"
+            tools:ignore="Deprecated,LabelFor,RtlSymmetry" />
 
         <Button
             android:id="@+id/sendButton"

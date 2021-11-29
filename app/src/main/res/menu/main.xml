@@ -2,10 +2,8 @@
 <menu xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/main_newMessage"
-        android:title="New Messsage"
-        tools:ignore="HardcodedText" />
     <item android:id="@+id/main_signOut"
         android:title="Sign out"
-        tools:ignore="HardcodedText" />
+        tools:ignore="HardcodedText"
+        app:showAsAction="always"/>
 </menu>

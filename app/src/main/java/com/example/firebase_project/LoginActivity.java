@@ -50,7 +50,6 @@ public class LoginActivity extends AppCompatActivity {
         if (requestCode == AUTHUI_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                Log.d(TAG, "onActivityResult: " + user.getEmail());
                 if (user.getMetadata().getCreationTimestamp() == user.getMetadata().getLastSignInTimestamp()) {
                     Toast.makeText(this, "Welcome new User", Toast.LENGTH_SHORT).show();
                 } else {
