@@ -176,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 if (friendlyMessage == null || friendlyMessages == null || friendlyMessages.isEmpty())
                     return;
                 String key = snapshot.getKey();
+                Log.d(TAG, "onChildRemoved: " + key);
                 int index = listKey.indexOf(key);
                 if (index != -1) {
                     friendlyMessages.remove(index);
